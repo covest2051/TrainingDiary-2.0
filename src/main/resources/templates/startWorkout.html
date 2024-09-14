@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Секундомер</title>
+    <style>
+        .timer {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="timer" id="display">00:00:00</div>
+
+<button id="startBtn" onclick="startTimer()">Запустить</button>
+<button id="stopBtn" onclick="stopTimer()" disabled>Остановить</button>
+<button id="resetBtn" onclick="resetTimer()" disabled>Сбросить</button>
+
+<form th:action="@{/submitWorkout}" method="post">
+    <input type="hidden" id="workoutDuration" name="workoutDuration">
+    <button type="submit">Отправить результат</button>
+</form>
+
+<script>
+    let timer;
+    let seconds = 0;
+    let running = false;
+
+    function startTimer() {
+        if (!running) {
+            running = true;
+            timer = setInterval(function() {
+                seconds++;
+                document.getElementById('display').innerText = formatTime(seconds);
+            }, 1000);
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            document.getElementById('resetBtn').disabled = false;
+        }
+    }
+
+    function stopTimer() {
+        if (running) {
+            clearInterval(timer);
+            running = false;
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('startBtn').disabled = false;
+
+            // Устанавливаем значение финального времени в скрытое поле формы
+            document.getElementById('workoutDuration').value = formatTime(seconds);
+        }
+    }
+
+    function resetTimer() {
+        clearInterval(timer);
+        running = false;
+        seconds = 0;
+        document.getElementById('display').innerText = "00:00:00";
+        document.getElementById('startBtn').disabled = false;
+        document.getElementById('stopBtn').disabled = true;
+        document.getElementById('resetBtn').disabled = true;
+
+        // Очищаем скрытое поле формы
+        document.getElementById('workoutDuration').value = '';
+    }
+
+    function formatTime(seconds) {
+        let hrs = Math.floor(seconds / 3600);
+        let mins = Math.floor((seconds % 3600) / 60);
+        let secs = seconds % 60;
+
+        return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+</script>
+</body>
+</html>

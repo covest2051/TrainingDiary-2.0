@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Workout</title>
+</head>
+<body>
+<form th:action="@{/selectWorkoutType}" method="get">
+    <select class="form-control" id="workoutType" name="workoutType">
+        <option value="">Выберите тип тренировки</option>
+        <option th:each="workoutType : ${workoutTypes}"
+                th:value="${workoutType.name()}"
+                th:text="${workoutType}">
+        </option>
+    </select>
+    <button type="submit">Подтвердить</button>
+</form>
+</body>
+</html>
