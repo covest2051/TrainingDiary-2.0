@@ -18,7 +18,7 @@ public class Workout {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "workout_type")
+    @Column(name = "workout_type", insertable = false, updatable = false)
     private WorkoutType workoutType;
 
     @Column(name = "workout_duration")
@@ -32,4 +32,3 @@ public class Workout {
         this.workoutType = workoutType;
     }
 }
-

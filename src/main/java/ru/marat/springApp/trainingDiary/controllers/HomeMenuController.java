@@ -16,9 +16,9 @@ import ru.marat.springApp.trainingDiary.repository.UserRepository;
 import ru.marat.springApp.trainingDiary.secutiry.UserDetails;
 import ru.marat.springApp.trainingDiary.services.UserDetailsService;
 import ru.marat.springApp.trainingDiary.services.WorkoutService;
-
+import ru.marat.springApp.trainingDiary.util.Functional;
 import java.util.Optional;
-import java.util.Random;
+
 
 @Controller
 public class HomeMenuController {
@@ -26,12 +26,16 @@ public class HomeMenuController {
     private final WorkoutService workoutService;
     private final UserDetailsService userDetailsService;
     private final UserRepository userRepository;
+    private final Functional functional;
+    private final byte CALORIES_BURNED_FOR_ONE_MINUTE_CARDIO;
 
     @Autowired
-    public HomeMenuController(WorkoutService workoutService, UserDetailsService userDetailsService, UserRepository userRepository) {
+    public HomeMenuController(WorkoutService workoutService, UserDetailsService userDetailsService, UserRepository userRepository, Functional functional) {
         this.workoutService = workoutService;
         this.userDetailsService = userDetailsService;
         this.userRepository = userRepository;
+        this.functional = functional;
+        CALORIES_BURNED_FOR_ONE_MINUTE_CARDIO = 8;
     }
 
     @GetMapping("/homeMenu")
@@ -74,9 +78,31 @@ public class HomeMenuController {
 
     @PostMapping("/endWorkout")
     public String endWorkout(@RequestParam("workoutDuration") String workoutDurationStr,
-                             @ModelAttribute Workout workout, HttpSession session) {
+                             HttpSession session, Model model) {
         WorkoutType workoutType = (WorkoutType) session.getAttribute("workoutType");
+
+        Workout workout;
+
+        switch (workoutType) {
+            case CARDIO:
+                workout = new CardioWorkout();
+                break;
+            case STRENGTH:
+                workout = new StrengthWorkout();
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown workout type: " + workoutType);
+        }
+
+        if (workout instanceof CardioWorkout) {
+            CardioWorkout cardioWorkout = (CardioWorkout) workout;
+            Functional.convertTimeToSeconds(workoutDurationStr);
+            cardioWorkout.setCaloriesBurned((int) (Functional.convertTimeToSeconds(workoutDurationStr)/60 * CALORIES_BURNED_FOR_ONE_MINUTE_CARDIO));
+        }
+
         workout.setWorkoutType(workoutType);
+
+        workout.setWorkoutDuration(workoutDurationStr);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -85,9 +111,13 @@ public class HomeMenuController {
         Optional<User> optionalUser = userRepository.findById(userId);
         optionalUser.ifPresent(workout::setUser);
 
+        // Сохраняем тренировку
         workoutService.save(workout);
+
+        model.addAttribute("workout", workout);
         return "startWorkout";
     }
+
 
 
 }
