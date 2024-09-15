@@ -5,7 +5,7 @@
     <title>Create Workout</title>
 </head>
 <body>
-<form th:action="@{/selectWorkoutType}" method="get">
+<form th:action="@{/startWorkout}" method="get">
     <select class="form-control" id="workoutType" name="workoutType">
         <option value="">Выберите тип тренировки</option>
         <option th:each="workoutType : ${workoutTypes}"

@@ -18,9 +18,9 @@
 <button id="stopBtn" onclick="stopTimer()" disabled>Остановить</button>
 <button id="resetBtn" onclick="resetTimer()" disabled>Сбросить</button>
 
-<form th:action="@{/submitWorkout}" method="post">
-    <input type="hidden" id="workoutDuration" name="workoutDuration">
-    <button type="submit">Отправить результат</button>
+<form th:action="@{/endWorkout}" method="post">
+    <input type="hidden" id="workoutDuration" name="workoutDuration" />
+    <button type="submit">Завершить тренировку</button>
 </form>
 
 <script>

@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Entity
-@DiscriminatorValue("STRENGTH")
+@DiscriminatorValue("STRENGTH")  // Соответствует значению "STRENGTH" в столбце workout_type
 @Data
 public class StrengthWorkout extends Workout {
     private int weight;

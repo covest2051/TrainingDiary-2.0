@@ -8,8 +8,8 @@ public enum WorkoutType {
     @Override
     public String toString() {
         switch (this) {
-            case CARDIO: return "Кардио (бег)";
-            case STRENGTH: return "Силовая (жим штанги)";
+            case CARDIO: return "CARDIO";
+            case STRENGTH: return "STRENGTH";
             default: throw new IllegalArgumentException();
         }
     }

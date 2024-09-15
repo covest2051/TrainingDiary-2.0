@@ -9,5 +9,4 @@ import lombok.Data;
 @Data
 public class CardioWorkout extends Workout {
     private int caloriesBurned;
-
 }
