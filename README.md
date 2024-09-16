@@ -26,6 +26,6 @@
 ## Стек технологий
 
 - **Backend**: Spring Boot, Spring Security, Hibernate.
-- **Frontend**: Thymeleaf, HTML, CSS, JavaScript.
+- **Frontend**: Thymeleaf, HTML, CSS, JavaScript (AI generated).
 - **База данных**: PostgreSQL для хранения данных о пользователях и тренировках.
 - **Сборка и запуск**: Maven.
