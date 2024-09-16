@@ -5,18 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Секундомер</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
         .timer {
-            font-size: 2rem;
+            font-size: 3rem;
             margin-bottom: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        button:hover:not(:disabled) {
+            background-color: #0056b3;
+        }
+        form {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
 <div class="timer" id="display">00:00:00</div>
 
-<button id="startBtn" onclick="startTimer()">Запустить</button>
-<button id="stopBtn" onclick="stopTimer()" disabled>Остановить</button>
-<button id="resetBtn" onclick="resetTimer()" disabled>Сбросить</button>
+<div>
+    <button id="startBtn" onclick="startTimer()">Запустить</button>
+    <button id="stopBtn" onclick="stopTimer()" disabled>Остановить</button>
+    <button id="resetBtn" onclick="resetTimer()" disabled>Сбросить</button>
+</div>
 
 <form th:action="@{/endWorkout}" method="post">
     <input type="hidden" id="workoutDuration" name="workoutDuration" />

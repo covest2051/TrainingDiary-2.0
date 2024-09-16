@@ -1,5 +1,6 @@
 package ru.marat.springApp.trainingDiary.models.trainingModels;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import ru.marat.springApp.trainingDiary.models.userModels.User;
@@ -15,9 +16,11 @@ public class Workout {
     private int workoutId;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "workout_type", insertable = false, updatable = false)
     private WorkoutType workoutType;
 

@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 import ru.marat.springApp.trainingDiary.models.trainingModels.Workout;
 import ru.marat.springApp.trainingDiary.repository.WorkoutRepository;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class WorkoutService {
 
@@ -17,5 +20,13 @@ public class WorkoutService {
 
     public void save(Workout workout) {
         workoutRepository.save(workout);
+    }
+
+    public List<Workout> findWorkouts() {
+        return workoutRepository.findAll();
+    }
+
+    public Optional<Workout> findWorkout(int id) {
+        return workoutRepository.findById(id);
     }
 }

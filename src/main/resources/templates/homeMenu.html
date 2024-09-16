@@ -2,11 +2,50 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Меню</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        a {
+            display: inline-block;
+            text-decoration: none;
+            color: #007bff;
+            font-size: 18px;
+            margin: 10px;
+            padding: 10px 20px;
+            border: 2px solid #007bff;
+            border-radius: 4px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        a:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+    </style>
 </head>
 <body>
+<div class="container">
+    <h1>Меню</h1>
     <a href="/createWorkout">Создать тренировку</a>
-    <br>
     <a href="/showWorkoutHistory">Посмотреть историю тренировок</a>
+</div>
 </body>
 </html>

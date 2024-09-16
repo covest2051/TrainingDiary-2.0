@@ -7,18 +7,21 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import ru.marat.springApp.trainingDiary.models.exerciseModels.AvailableExercise;
 import ru.marat.springApp.trainingDiary.models.trainingModels.CardioWorkout;
 import ru.marat.springApp.trainingDiary.models.trainingModels.StrengthWorkout;
 import ru.marat.springApp.trainingDiary.models.trainingModels.Workout;
 import ru.marat.springApp.trainingDiary.models.trainingModels.WorkoutType;
 import ru.marat.springApp.trainingDiary.models.userModels.User;
+import ru.marat.springApp.trainingDiary.repository.AvailableExerciseRepository;
 import ru.marat.springApp.trainingDiary.repository.UserRepository;
 import ru.marat.springApp.trainingDiary.secutiry.UserDetails;
 import ru.marat.springApp.trainingDiary.services.UserDetailsService;
 import ru.marat.springApp.trainingDiary.services.WorkoutService;
 import ru.marat.springApp.trainingDiary.util.Functional;
-import java.util.Optional;
 
+import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class HomeMenuController {
@@ -26,14 +29,16 @@ public class HomeMenuController {
     private final WorkoutService workoutService;
     private final UserDetailsService userDetailsService;
     private final UserRepository userRepository;
+    private final AvailableExerciseRepository availableExerciseRepository;
     private final Functional functional;
     private final byte CALORIES_BURNED_FOR_ONE_MINUTE_CARDIO;
 
     @Autowired
-    public HomeMenuController(WorkoutService workoutService, UserDetailsService userDetailsService, UserRepository userRepository, Functional functional) {
+    public HomeMenuController(WorkoutService workoutService, UserDetailsService userDetailsService, UserRepository userRepository, AvailableExerciseRepository availableExerciseRepository, Functional functional) {
         this.workoutService = workoutService;
         this.userDetailsService = userDetailsService;
         this.userRepository = userRepository;
+        this.availableExerciseRepository = availableExerciseRepository;
         this.functional = functional;
         CALORIES_BURNED_FOR_ONE_MINUTE_CARDIO = 8;
     }
@@ -73,6 +78,11 @@ public class HomeMenuController {
         workout.setWorkoutType(workoutType);
         model.addAttribute("workout", workout);
         model.addAttribute("workoutType", workoutType);
+
+        // Получение списка доступных упражнений
+        List<AvailableExercise> exercises = availableExerciseRepository.findByExerciseType(workoutTypeStr);
+        model.addAttribute("exercises", exercises);
+
         return "startWorkout";
     }
 
@@ -97,11 +107,10 @@ public class HomeMenuController {
         if (workout instanceof CardioWorkout) {
             CardioWorkout cardioWorkout = (CardioWorkout) workout;
             Functional.convertTimeToSeconds(workoutDurationStr);
-            cardioWorkout.setCaloriesBurned((int) (Functional.convertTimeToSeconds(workoutDurationStr)/60 * CALORIES_BURNED_FOR_ONE_MINUTE_CARDIO));
+            cardioWorkout.setCaloriesBurned((int) (Functional.convertTimeToSeconds(workoutDurationStr) / 60 * CALORIES_BURNED_FOR_ONE_MINUTE_CARDIO));
         }
 
         workout.setWorkoutType(workoutType);
-
         workout.setWorkoutDuration(workoutDurationStr);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -114,10 +123,17 @@ public class HomeMenuController {
         // Сохраняем тренировку
         workoutService.save(workout);
 
-        model.addAttribute("workout", workout);
-        return "startWorkout";
+        // Получаем ID сохраненной тренировки
+        int workoutId = workout.getWorkoutId(); // Предполагается, что в workout есть метод getId()
+
+        // Перенаправление на /endWorkout/{id}
+        return "redirect:/endWorkout/" + workoutId;
     }
 
 
-
+    @GetMapping("/getExercises")
+    @ResponseBody
+    public List<AvailableExercise> getExercises(@RequestParam("workoutType") String workoutType) {
+        return availableExerciseRepository.findByExerciseType(workoutType);
+    }
 }

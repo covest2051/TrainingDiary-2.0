@@ -2,18 +2,137 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Workout</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        form {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .exercise-group {
+            margin-bottom: 20px;
+        }
+        .exercise-details {
+            margin-top: 10px;
+        }
+        .form-control {
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+    <script>
+        function updateWorkoutInfo() {
+            var workoutType = document.getElementById("workoutType").value;
+            var exerciseDiv = document.getElementById("exerciseDiv");
+            var addExerciseButton = document.getElementById("addExerciseButton");
+            var startWorkoutButton = document.getElementById("startWorkoutButton");
+
+            if (workoutType) {
+                fetch(`/getExercises?workoutType=${workoutType}`)
+                    .then(response => response.json())
+                    .then(exercises => {
+                        var exerciseOptions = exercises.map(exercise => `<option value="${exercise.name}">${exercise.name}</option>`).join('');
+                        exerciseDiv.innerHTML = `
+                            <div class="exercise-group">
+                                <select class="form-control" name="exercise" onchange="updateExerciseDetails('${workoutType}', this)">
+                                    <option value="">Выберите упражнение</option>
+                                    ${exerciseOptions}
+                                </select>
+                                <div class="exercise-details"></div>
+                            </div>
+                        `;
+                        addExerciseButton.style.display = "block";
+                        startWorkoutButton.style.display = "block";
+                    });
+            } else {
+                exerciseDiv.innerHTML = "";
+                addExerciseButton.style.display = "none";
+                startWorkoutButton.style.display = "none";
+            }
+        }
+
+        function updateExerciseDetails(workoutType, selectElement) {
+            var exerciseDetailsDiv = selectElement.nextElementSibling;
+            if (workoutType === "CARDIO") {
+                exerciseDetailsDiv.innerHTML = `
+                    <label for="intensity">Интенсивность:</label>
+                    <select name="intensity">
+                        <option value="low">Лёгкая</option>
+                        <option value="medium">Средняя</option>
+                        <option value="high">Высокая</option>
+                    </select>
+                `;
+            } else if (workoutType === "STRENGTH") {
+                exerciseDetailsDiv.innerHTML = `
+                    <label for="weight">Рабочий вес:</label>
+                    <input type="number" name="weight" placeholder="Введите рабочий вес">
+                    <label for="sets">Количество подходов:</label>
+                    <input type="number" name="sets" placeholder="Введите количество подходов">
+                    <label for="reps">Количество повторений:</label>
+                    <input type="number" name="reps" placeholder="Введите количество повторений">
+                `;
+            }
+        }
+
+        function addExercise() {
+            var workoutType = document.getElementById("workoutType").value;
+            var exerciseDiv = document.getElementById("exerciseDiv");
+            var newExerciseDiv = document.createElement("div");
+            newExerciseDiv.classList.add("exercise-group");
+            newExerciseDiv.innerHTML = `
+                <select class="form-control" name="exercise" onchange="updateExerciseDetails('${workoutType}', this)">
+                    <option value="">Выберите упражнение</option>
+                    ${document.querySelector(".exercise-group select").innerHTML}
+                </select>
+                <div class="exercise-details"></div>
+            `;
+            exerciseDiv.appendChild(newExerciseDiv);
+        }
+    </script>
 </head>
 <body>
 <form th:action="@{/startWorkout}" method="get">
-    <select class="form-control" id="workoutType" name="workoutType">
+    <label for="workoutType">Тип тренировки:</label>
+    <select class="form-control" id="workoutType" name="workoutType" onchange="updateWorkoutInfo()">
         <option value="">Выберите тип тренировки</option>
         <option th:each="workoutType : ${workoutTypes}"
                 th:value="${workoutType.name()}"
                 th:text="${workoutType}">
         </option>
     </select>
-    <button type="submit">Подтвердить</button>
+    <div id="exerciseDiv"></div>
+    <button type="button" id="addExerciseButton" onclick="addExercise()" style="display:none;">Добавить упражнение</button>
+    <button type="submit" id="startWorkoutButton" style="display:none;">Начать тренировку</button>
 </form>
 </body>
 </html>
